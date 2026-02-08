@@ -1,6 +1,6 @@
 
 /* ===================== DB ===================== */
-const DB_NAME = "ZavodyPAS6";
+const DB_NAME = "ZavodyPAS7";
 let db;
 let loggedUser = null;
 let mode = "zavody";
