@@ -1,0 +1,63 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 30px;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+button {
+    padding: 6px 12px;
+    cursor: pointer;
+    margin: 4px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #999;
+    padding: 6px;
+}
+
+th {
+    background: #eee;
+}
+
+#userInfo {
+    margin-top: 10px;
+    font-weight: bold;
+}
+
+/* ===== MODAL ===== */
+
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+.modal-box {
+    background: white;
+    padding: 20px;
+    width: 360px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.modal-box input,
+.modal-box select {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 6px;
+}

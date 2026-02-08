@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<link rel="stylesheet" href="css/style.css">
+<meta charset="UTF-8">
+<title>Závody PAS 4</title>
+</head>
+
+
+<body>
+<script src="js/script.js"></script>
+<header>
+    <h2>Závody PAS</h2>
+    <button id="loginBtn" onclick="loginBtnClick()">Přihlásit</button>
+</header>
+
+<div id="userInfo"></div>
+
+<table>
+    <thead id="thead"></thead>
+    <tbody id="tbody"></tbody>
+</table>
+
+<div id="rolePanel" style="display:none"></div>
+<div id="adminPanel" style="display:none"></div>
+
+<!-- LOGIN -->
+<div class="modal" id="loginModal">
+    <div class="modal-box">
+        <h3>Přihlášení</h3>
+        <input id="loginEmail" placeholder="Email">
+        <input id="loginPass" type="password" placeholder="Heslo">
+        <button onclick="login()">Přihlásit</button>
+        <button onclick="closeLogin()">Zrušit</button>
+    </div>
+</div>
+
+<!-- EDIT MODAL -->
+<div class="modal" id="editModal">
+    <div class="modal-box">
+        <h3 id="editTitle"></h3>
+
+        <div id="userFields">
+            <input id="uName" placeholder="Jméno">
+            <input id="uEmail" placeholder="Email">
+            <input id="uPass" placeholder="Heslo">
+            <select id="uRole">
+                <option>rozhodčí</option>
+                <option>hlavní_rozhodčí</option>
+                <option>administrator</option>
+            </select>
+        </div>
+
+        <div id="raceFields">
+            <input id="zNazev" placeholder="Název">
+            <input id="zMisto" placeholder="Místo">
+            <input id="zDatum" placeholder="Datum (DD.MM.YYYY)">
+            <input id="zStart" placeholder="Začátek">
+            <input id="zKonec" placeholder="Konec">
+        </div>
+
+        <button onclick="saveEdit()">OK</button>
+        <button onclick="closeEdit()">Zrušit</button>
+    </div>
+</div>
+
+
+
+</body>
+</html>
