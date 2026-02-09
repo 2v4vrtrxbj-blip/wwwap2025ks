@@ -1,4 +1,23 @@
 
+/*============ Vytvoření třídy zavod =============*/
+/* Vložit závod: */
+/* */
+
+class Zavod {
+    constructor(nazev, misto, datum, casZahajeni, casKonec) {
+        this.nazev = nazev;
+        this.misto = misto;
+        this.datum = datum;
+        this.cas_zahajeni = casZahajeni;
+        this.cas_konec = casKonec;
+    }
+
+    delkaZavodu() {
+        return `${this.cas_zahajeni} – ${this.cas_konec}`;
+    }
+}
+
+
 /* ===================== DB ===================== */
 const DB_NAME = "ZavodyPAS7";
 let db;
@@ -13,9 +32,16 @@ req.onupgradeneeded = e => {
     db = e.target.result;
 
     const zavody = db.createObjectStore("zavody",{keyPath:"id",autoIncrement:true});
+    /*  ======================= Předvyplnění závodů ===================== */
+    /*
     zavody.add({nazev:"Jarní závody PAS",misto:"Praha",datum:"10.04.2026",cas_zahajeni:"09:00",cas_konec:"17:00"});
     zavody.add({nazev:"Letní pohár PAS",misto:"Brno",datum:"15.06.2026",cas_zahajeni:"10:00",cas_konec:"18:00"});
     zavody.add({nazev:"Podzimní finále PAS",misto:"Ostrava",datum:"20.09.2026",cas_zahajeni:"09:30",cas_konec:"16:30"});
+    */
+    /* ======================= Předvyplnění závodů pomocí třídy ===================== */
+    zavody.add(new Zavod("Jarní závody PAS","Praha","10.04.2026","09:00","17:00"));
+    zavody.add(new Zavod("Letní pohár PAS","Brno","15.06.2026","10:00","18:00"));
+    zavody.add(new Zavod("Podzimní finále PAS","Ostrava","20.09.2026","09:30","16:30"));
 
     const users = db.createObjectStore("User",{keyPath:"id",autoIncrement:true});
     users.createIndex("email","email",{unique:true});
@@ -100,6 +126,8 @@ function showUsers(){
     adminPanel.style.display="block";
 }
 
+/* ============== Uložení závodů do tabulky ============== */
+
 function showZavody(){
     adminPanel.innerHTML=`
         <button onclick="openAdd()">Přidat závod</button>
@@ -109,12 +137,18 @@ function showZavody(){
     adminPanel.style.display="block";
     renderZavody();
 }
-
+/* ================ Zobrazí závody v tabulce ================ */
+/* Původní verze bez třídy:
 function renderZavody(){
     mode="zavody";
     thead.innerHTML=`
         <tr>
-            <th></th><th>Název</th><th>Místo</th><th>Datum</th><th>Začátek</th><th>Konec</th>
+            <th></th>
+            <th>Název</th>
+            <th>Místo</th>
+            <th>Datum</th>
+            <th>Začátek</th>
+            <th>Konec</th>
         </tr>`;
     tbody.innerHTML="";
     db.transaction("zavody").objectStore("zavody")
@@ -133,10 +167,49 @@ function renderZavody(){
                 </tr>`;
             c.continue();
         };
+        
 }
+*/
 
+function renderZavody() {
+    mode = "zavody";
 
+    thead.innerHTML = 
+        `<tr>
+            <th></th><th>Název</th><th>Místo</th><th>Datum</th><th>Začátek</th><th>Konec</th>
+        </tr>`;
 
+    tbody.innerHTML = "";
+
+    db.transaction("zavody")
+      .objectStore("zavody")
+      .openCursor().onsuccess = e => {
+
+        const c = e.target.result;
+        if (!c) return;
+        /* ======================== Zobrazí závod pomocí třídy (c.value->zavod)===================== */
+        const data = c.value;
+        const zavod = new Zavod(
+            data.nazev,
+            data.misto,
+            data.datum,
+            data.cas_zahajeni,
+            data.cas_konec
+        );
+        /* ======================== Vytvoření a naplnění tabulky z třídy ===================== */
+        tbody.innerHTML += `
+            <tr>
+                <td><input type="radio" name="sel" value="${c.key}"></td>
+                <td>${zavod.nazev}</td>
+                <td>${zavod.misto}</td>
+                <td>${zavod.datum}</td>
+                <td>${zavod.cas_zahajeni}</td>
+                <td>${zavod.cas_konec}</td>
+            </tr>`;
+
+        c.continue();
+    };
+}
 
 
 /* ===================== CRUD ===================== */
@@ -170,8 +243,11 @@ function saveEdit(){
         showUsers();
     } else {
         const store=db.transaction("zavody","readwrite").objectStore("zavody");
-        const data={nazev:zNazev.value,misto:zMisto.value,datum:zDatum.value,cas_zahajeni:zStart.value,cas_konec:zKonec.value};
-        editId?store.put({...data,id:editId}):store.add(data);
+        /*const data={nazev:zNazev.value,misto:zMisto.value,datum:zDatum.value,cas_zahajeni:zStart.value,cas_konec:zKonec.value};
+        editId?store.put({...data,id:editId}):store.add(data);*/
+        /*======================== Uložení závodu pomocí třídy (data->zavod)===================== */
+        const zavod = new Zavod(zNazev.value,zMisto.value,zDatum.value,zStart.value,zKonec.value);
+        editId?store.put({...zavod,id:editId}):store.add(zavod);
         renderZavody();
     }
     closeEdit();
