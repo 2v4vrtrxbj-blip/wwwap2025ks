@@ -12,9 +12,7 @@ class Zavod {
         this.cas_konec = casKonec;
     }
 
-    delkaZavodu() {
-        return `${this.cas_zahajeni} – ${this.cas_konec}`;
-    }
+
 }
 
 
