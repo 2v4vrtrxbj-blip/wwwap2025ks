@@ -173,11 +173,17 @@ function renderZavody(){
 
 function renderZavody() {
     mode = "zavody";
-
-    thead.innerHTML = 
-        `<tr>
-            <th></th><th>Název</th><th>Místo</th><th>Datum</th><th>Začátek</th><th>Konec</th>
-        </tr>`;
+        if (loggedUser) {
+            thead.innerHTML = 
+            `<tr>
+                <th></th><th>Název</th><th>Místo</th><th>Datum</th><th>Začátek</th><th>Konec</th>
+            </tr>`;
+            }else{
+                thead.innerHTML = 
+                `<tr>
+                    <th>Název</th><th>Místo</th><th>Datum</th><th>Začátek</th><th>Konec</th>
+                </tr>`;
+            }
 
     tbody.innerHTML = "";
 
@@ -197,16 +203,27 @@ function renderZavody() {
             data.cas_konec
         );
         /* ======================== Vytvoření a naplnění tabulky z třídy ===================== */
-        tbody.innerHTML += `
-            <tr>
-                <td><input type="radio" name="sel" value="${c.key}"></td>
-                <td>${zavod.nazev}</td>
-                <td>${zavod.misto}</td>
-                <td>${zavod.datum}</td>
-                <td>${zavod.cas_zahajeni}</td>
-                <td>${zavod.cas_konec}</td>
-            </tr>`;
-
+        /* ======================== Pokud je uživatel přihlášen, zobrazí se i možnost výběru závodu (input) ===================== */
+        if (loggedUser) {
+            tbody.innerHTML += `
+                <tr>
+                    <td><input type="radio" name="sel" value="${c.key}"></td>
+                    <td>${zavod.nazev}</td>
+                    <td>${zavod.misto}</td>
+                    <td>${zavod.datum}</td>
+                    <td>${zavod.cas_zahajeni}</td>
+                    <td>${zavod.cas_konec}</td>
+                </tr>`;
+        } else {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${zavod.nazev}</td>
+                    <td>${zavod.misto}</td>
+                    <td>${zavod.datum}</td>
+                    <td>${zavod.cas_zahajeni}</td>
+                    <td>${zavod.cas_konec}</td>
+                </tr>`;
+        }
         c.continue();
     };
 }
