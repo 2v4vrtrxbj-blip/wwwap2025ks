@@ -11,6 +11,12 @@ class Zavod {
         this.cas_zahajeni = casZahajeni;
         this.cas_konec = casKonec;
     }
+/* =============Vložit závod do DB pomocí třídy ==================*/    
+    ulozDoDB(db) {
+        const tx = db.transaction("zavody", "readwrite");
+        const store = tx.objectStore("zavody");
+        store.add(this);
+    }
 
 
 }
@@ -262,7 +268,10 @@ function saveEdit(){
         editId?store.put({...data,id:editId}):store.add(data);*/
         /*======================== Uložení závodu pomocí třídy (data->zavod)===================== */
         const zavod = new Zavod(zNazev.value,zMisto.value,zDatum.value,zStart.value,zKonec.value);
-        editId?store.put({...zavod,id:editId}):store.add(zavod);
+        /* ======================== Uložení závodu  ===================== 
+        editId?store.put({...zavod,id:editId}):store.add(zavod);*/
+        /* ======================== Uložení závodu pomocí metody (zavod.ulozDoDB) ===================== */
+        zavod.ulozDoDB(db, editId);
         renderZavody();
     }
     closeEdit();
