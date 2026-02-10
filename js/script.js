@@ -48,7 +48,11 @@ class Zavod {
         // put = aktualizace existujícího záznamu
         store.put({ ...zavod, id: id });
     }
-
+    static smazZavodStatic(db, id) {
+        const tx = db.transaction("zavody", "readwrite");
+        const store = tx.objectStore("zavody");
+        store.delete(id);
+    }
 
 }
 
@@ -367,7 +371,8 @@ function saveEdit(){
     }
     closeEdit();
 }
-
+/* ===================== Smazání položky stará verze, nahrazeno mazáním pomocí statické metody ===================== */
+/*
 function deleteItem(){
     const id=getSelected();
     if(!id) return alert("Vyberte položku");
@@ -375,7 +380,22 @@ function deleteItem(){
       .objectStore(mode==="users"?"User":"zavody").delete(id);
     mode==="users"?showUsers():renderZavody();
 }
+*/  
+function deleteItem() {
+    const id = getSelected();
+    if (!id) return alert("Vyberte položku"); // kontrola, zda je něco vybráno
 
+    if (mode === "users") {
+        db.transaction("User", "readwrite")
+          .objectStore("User")
+          .delete(id);
+        showUsers();
+    } else {
+        /* ========= Mazání závodu pomocí statické metody třídy ========= */
+        Zavod.smazZavodStatic(db, id);
+        renderZavody();
+    }
+}
 /* ===================== MODALS ===================== */
 function openLogin(){ loginModal.style.display="block"; }
 function closeLogin(){ loginModal.style.display="none"; }
