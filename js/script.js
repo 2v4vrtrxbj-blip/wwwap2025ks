@@ -1,7 +1,7 @@
 
 /*============ Vytvoření třídy zavod =============*/
-/* Vložit závod: */
-/* */
+/* Vložit, upravit, smazazat závod: */
+
 
 class Zavod {
     constructor(nazev, misto, datum, casZahajeni, casKonec) {
