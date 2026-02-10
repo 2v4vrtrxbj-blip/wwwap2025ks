@@ -11,7 +11,7 @@ class Zavod {
         this.cas_zahajeni = casZahajeni;
         this.cas_konec = casKonec;
     }
-    /* =============Vložit závod do DB pomocí třídy ==================*/    
+    /* =============Vložit závod do DB pomocí třídy (již nepoužíváno) ==================*/    
     ulozDoDB(db) {
         const tx = db.transaction("zavody", "readwrite");
         const store = tx.objectStore("zavody");
@@ -29,9 +29,26 @@ class Zavod {
             data.cas_zahajeni,
             data.cas_konec
         );
-
+    // add = vložení nového záznamu
         store.add(zavod);
     }
+
+    static upravZavodStatic(db, id, data) {
+        const tx = db.transaction("zavody", "readwrite");
+        const store = tx.objectStore("zavody");
+
+        const zavod = new Zavod(
+            data.nazev,
+            data.misto,
+            data.datum,
+            data.cas_zahajeni,
+            data.cas_konec
+        );
+
+        // put = aktualizace existujícího záznamu
+        store.put({ ...zavod, id: id });
+    }
+
 
 }
 
@@ -260,7 +277,7 @@ function openAdd(){
     raceFields.style.display=mode==="zavody"?"block":"none";
     editModal.style.display="block";
 }
-
+/*
 function openEdit(){
     editId=getSelected();
     if(!editId) return alert("Vyberte položku");
@@ -268,6 +285,35 @@ function openEdit(){
     userFields.style.display=mode==="users"?"block":"none";
     raceFields.style.display=mode==="zavody"?"block":"none";
     editModal.style.display="block";
+}
+*/
+/* ===================== Otevře modální okno pro editaci a předvyplní data z DB ===================== */
+function openEdit(){
+    editId = getSelected();
+    if(!editId) return alert("Vyberte položku");
+
+    editTitle.innerText = "Editace";
+    userFields.style.display = mode === "users" ? "block" : "none";
+    raceFields.style.display = mode === "zavody" ? "block" : "none";
+    editModal.style.display = "block";
+
+    /* ======= NAČTENÍ PŮVODNÍCH DAT Z DB ======= */
+    if (mode === "zavody") {
+        const tx = db.transaction("zavody");
+        const store = tx.objectStore("zavody");
+
+        store.get(editId).onsuccess = e => {
+            const z = e.target.result;
+            if (!z) return;
+
+            // předvyplnění formuláře
+            zNazev.value  = z.nazev;
+            zMisto.value  = z.misto;
+            zDatum.value  = z.datum;
+            zStart.value  = z.cas_zahajeni;
+            zKonec.value  = z.cas_konec;
+        };
+    }
 }
 
 function saveEdit(){
@@ -289,13 +335,34 @@ function saveEdit(){
         //zavod.ulozDoDB(db, editId);
         
         /* ======================== Uložení závodu pomocí statické metody třídy (Zavod.ulozDoDBStatic) ====================== */
-        Zavod.ulozDoDBStatic(db, {
+        /*Zavod.ulozDoDBStatic(db, {
             nazev: zNazev.value,
             misto: zMisto.value,
             datum: zDatum.value,
             cas_zahajeni: zStart.value,
             cas_konec: zKonec.value
-        });
+        });*/
+        /* ======================== Uložení/editace závodu pomocí statické metody ====================== */
+        const data = {
+            nazev: zNazev.value,
+            misto: zMisto.value,
+            datum: zDatum.value,
+            cas_zahajeni: zStart.value,
+            cas_konec: zKonec.value
+        };
+        /* ======================== Pokud editujeme, použijeme upravZavodStatic, jinak ulozDoDBStatic ===================== */
+        if (editId) {
+            Zavod.upravZavodStatic(db, editId, data);
+        } else {
+        Zavod.ulozDoDBStatic(db, data);
+        }
+
+    renderZavody();
+
+
+
+
+
         renderZavody();
     }
     closeEdit();
