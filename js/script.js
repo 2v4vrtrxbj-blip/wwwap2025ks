@@ -362,12 +362,6 @@ function saveEdit(){
         }
 
     renderZavody();
-
-
-
-
-
-        renderZavody();
     }
     closeEdit();
 }
